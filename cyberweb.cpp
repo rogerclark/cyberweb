@@ -1,5 +1,8 @@
 #include <windows.h>
 
+#include "rtl.h"
+#include "html.h"
+
 #pragma comment(lib, "ws2_32.lib")
 
 #define CW_WNDCLASS_MAINWINDOW L"CwMainWindow"
@@ -177,8 +180,165 @@ BOOL CwRegisterWindowClass(HINSTANCE instance) {
 	return (RegisterClassEx(&wc) != 0);
 }
 
+void BuildDOM() {
+    // document root
+    RefPtr<HtmlElement> root = new HtmlElement;
+    root->CreateWithType(HTML_ELEMENT_TYPE_ROOT);
+
+    {
+        RefPtr<HtmlElement> html = new HtmlElement;
+        html->CreateWithType(HTML_ELEMENT_TYPE_HTML);
+
+        // <head>
+        {
+            RefPtr<HtmlElement> head = new HtmlElement;
+            head->CreateWithType(HTML_ELEMENT_TYPE_HEAD);
+
+            {
+                RefPtr<HtmlElement> title = new HtmlElement;
+                title->CreateWithType(HTML_ELEMENT_TYPE_TITLE);
+                title->text.CreateWithRange(RS("CyberWeb"));            
+
+                head->children.Push(title);
+            }
+
+            html->children.Push(head);
+        }
+
+        // <body>
+        {
+            RefPtr<HtmlElement> body = new HtmlElement;
+            body->CreateWithType(HTML_ELEMENT_TYPE_BODY);
+
+            body->attributes.Set(RS("bgcolor"), RS("#000000"));
+            body->attributes.Set(RS("text"), RS("#ffffff"));
+            body->attributes.Set(RS("link"), RS("#FF00FF"));
+            body->attributes.Set(RS("alink"), RS("#FF00FF"));
+            body->attributes.Set(RS("vlink"), RS("#FF00FF"));
+
+            // <h1>
+            {
+                RefPtr<HtmlElement> h1 = new HtmlElement;
+                h1->CreateWithType(HTML_ELEMENT_TYPE_H1);
+                h1->text.CreateWithRange(RS("CyberWeb"));            
+            
+                body->children.Push(h1);
+            }
+
+            // <img>
+            {
+                RefPtr<HtmlElement> img = new HtmlElement;
+                img->CreateWithType(HTML_ELEMENT_TYPE_IMG);
+
+                img->attributes.Set(RS("src"), RS("logo.jpg"));
+                img->attributes.Set(RS("alt"), RS("CyberWeb"));
+
+                body->children.Push(img);
+            }
+
+            // <p> (first)
+            {
+                RefPtr<HtmlElement> p = new HtmlElement;
+                p->CreateWithType(HTML_ELEMENT_TYPE_P);
+
+                // left sibling text node
+                {
+                    RefPtr<HtmlElement> textNode = new HtmlElement;
+                    textNode->CreateWithType(HTML_ELEMENT_TYPE_TEXT);
+                    textNode->text.CreateWithRange(RS("Welcome to the "));
+
+                    p->children.Push(textNode);
+                }
+
+                // <b>
+                {
+                    RefPtr<HtmlElement> b = new HtmlElement;
+                    b->CreateWithType(HTML_ELEMENT_TYPE_B);
+                    b->text.CreateWithRange(RS("CyberWeb"));
+                
+                    p->children.Push(b);
+                }
+
+                // right sibling text node
+                {
+                    RefPtr<HtmlElement> textNode = new HtmlElement;
+                    textNode->CreateWithType(HTML_ELEMENT_TYPE_TEXT);
+                    textNode->text.CreateWithRange(RS(" homepage! This is a video series about building a mid-1990s web browser from scratch."));
+                
+                    p->children.Push(textNode);
+                }
+
+                body->children.Push(p);
+            }
+
+            // <p> (second)
+            {
+                RefPtr<HtmlElement> p = new HtmlElement;
+                p->CreateWithType(HTML_ELEMENT_TYPE_P);
+            
+                // left sibling text node
+                {
+                    RefPtr<HtmlElement> textNode = new HtmlElement;
+                    textNode->CreateWithType(HTML_ELEMENT_TYPE_TEXT);
+                    textNode->text.CreateWithRange(RS("Visit my "));
+                
+                    p->children.Push(textNode);
+                }
+            
+                // <a>
+                {
+                    RefPtr<HtmlElement> a = new HtmlElement;
+                    a->CreateWithType(HTML_ELEMENT_TYPE_A);
+                    a->attributes.Set(RS("href"), RS("https://youtube.com/rogerclarkonline"));
+                    a->text.CreateWithRange(RS("YouTube channel"));
+                
+                    p->children.Push(a);
+                }
+            
+                // "and"
+                {
+                    RefPtr<HtmlElement> textNode = new HtmlElement;
+                    textNode->CreateWithType(HTML_ELEMENT_TYPE_TEXT);
+                    textNode->text.CreateWithRange(RS(" and "));
+                
+                    p->children.Push(textNode);
+                }
+            
+                // <a>
+                {
+                    RefPtr<HtmlElement> a = new HtmlElement;
+                    a->CreateWithType(HTML_ELEMENT_TYPE_A);
+                    a->attributes.Set(RS("href"), RS("https://rogerclark.org/"));
+                    a->text.CreateWithRange(RS("website"));
+
+                    p->children.Push(a);
+                }
+
+                // right sibling text node
+                {
+                    RefPtr<HtmlElement> textNode = new HtmlElement;
+                    textNode->CreateWithType(HTML_ELEMENT_TYPE_TEXT);
+                    textNode->text.CreateWithRange(RS(" for more information."));
+                
+                    p->children.Push(textNode);
+                }
+            
+                body->children.Push(p);
+            }
+
+            html->children.Push(body);
+        }
+
+        root->children.Push(html);
+    }
+
+    root->Print(0);
+}
 
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR cmdLine, int show) {
+	BuildDOM();
+
+
 	WSADATA wsadata = { 0 };
 	WSAStartup(MAKEWORD(2, 2), &wsadata);
 

@@ -97,6 +97,14 @@ SOURCE=.\cyberweb.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\html.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\rtl.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 
